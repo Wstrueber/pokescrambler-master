@@ -97,7 +97,7 @@ form.addEventListener('submit', event => {
 
   if (input.value === selectedWord && usedHint === true) {
     currentPoints +=
-      selectedWord.length > 6 ? selectedWord.length : selectedWord.length / 2;
+      selectedWord.length > 6 ? selectedWord.length : Math.floor(selectedWord.length / 2);
     selectedWord = selectWord(pokemonArray);
     refresh();
     usedHint = false;
