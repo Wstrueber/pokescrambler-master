@@ -87,7 +87,7 @@ button:hover::after {
     width: 50%;
 }
 #hint:hover::after {
-    content: 'Your score will be cut in half.';
+    content: 'Your points for the next guess will be cut in half.';
 }
 #skip:hover::after {
     content: 'You will lose 10 points.';
