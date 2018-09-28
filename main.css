@@ -65,10 +65,38 @@ button {
     color: black;
     border: 0;
     z-index: 0;
+    position: relative;
+    transition: all .2s;
 }
 
 button:hover {
-    transform: translateY(4px);
+    filter: contrast(75%)
+}
+
+
+button:hover::after {
+    position: absolute;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    top: 0;
+    bottom: 0;
+    left: 100%;
+    width: 50%;
+}
+#hint:hover::after {
+    content: 'Your score will be cut in half.';
+}
+#skip:hover::after {
+    content: 'You will lose 10 points.';
+}
+
+
+button[disabled]:hover::after,
+button:disabled:hover::after {
+    display: none;
 }
 
 #hintSprite {
