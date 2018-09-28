@@ -7,18 +7,26 @@ const skipButton = document.getElementById('skip');
 const hintButton = document.getElementById('hint');
 const hintSprite = document.getElementById('hintSprite');
 const pokemonArray = [];
-const spriteArray = [];
 let currentPoints = 0;
+let usedHint = false;
 let selectedWord;
 let selectedPokemon;
+
+if (localStorage.getItem('score')) {
+  currentPoints = +localStorage.getItem('score');
+}
+
+if (currentPoints < 10) {
+  skipButton.disabled = true;
+}
 
 fetch(apiUrl)
   .then(response => response.json())
   .then(({ results }) => {
-    results.map(pokemon => pokemonArray.push(pokemon));
+    results.slice(0, 150).map(pokemon => pokemonArray.push(pokemon));
   })
   .then(_ => {
-    selectedWord = selectWord(pokemonArray.slice(0, 150));
+    selectedWord = selectWord(pokemonArray);
     pTag.innerHTML = scrambleWord(selectedWord);
   })
   .catch(e => console.error(e));
@@ -26,7 +34,7 @@ fetch(apiUrl)
 pointsTag.innerHTML = currentPoints.toString();
 
 function checkPoints() {
-  if (currentPoints > 10) {
+  if (currentPoints >= 10) {
     skipButton.disabled = false;
   } else {
     skipButton.disabled = true;
@@ -42,13 +50,14 @@ function selectWord(array) {
 function scrambleWord(word) {
   return word
     .split('')
-    .shuffle()
+    .sort(_ => 0.5 - Math.random())
     .join('');
 }
 
 function refresh() {
   pTag.innerHTML = scrambleWord(selectedWord);
   pointsTag.innerHTML = currentPoints.toString();
+  localStorage.setItem('score', currentPoints);
   input.value = '';
   checkPoints();
   hintButton.disabled = false;
@@ -56,7 +65,7 @@ function refresh() {
 }
 
 function skipWord() {
-  if (currentPoints > 10) {
+  if (currentPoints >= 10) {
     selectedWord = selectWord(pokemonArray);
     currentPoints -= 10;
     refresh();
@@ -65,6 +74,7 @@ function skipWord() {
 
 function giveHint() {
   hintButton.disabled = true;
+  usedHint = true;
   fetch(selectedPokemon.url)
     .then(response => response.json())
     .then(({ sprites }) => {
@@ -84,10 +94,21 @@ function giveHint() {
 
 form.addEventListener('submit', event => {
   event.preventDefault();
-  if (input.value === selectedWord) {
+
+  if (input.value === selectedWord && usedHint === true) {
     currentPoints +=
-      selectedWord.length > 6 ? selectedWord.length * 2 : selectedWord.length;
+      selectedWord.length > 6 ? selectedWord.length : selectedWord.length / 2;
     selectedWord = selectWord(pokemonArray);
     refresh();
+    usedHint = false;
+  }
+
+  if (input.value === selectedWord && usedHint != true) {
+    currentPoints +=
+      selectedWord.length > 6 ? selectedWord.length * 2 : selectedWord.length;
+
+    selectedWord = selectWord(pokemonArray);
+    refresh();
+    usedHint = false;
   }
 });
