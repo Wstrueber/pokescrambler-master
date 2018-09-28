@@ -18,7 +18,7 @@ fetch(apiUrl)
     results.map(pokemon => pokemonArray.push(pokemon));
   })
   .then(_ => {
-    selectedWord = selectWord(pokemonArray);
+    selectedWord = selectWord(pokemonArray.slice(0, 150));
     pTag.innerHTML = scrambleWord(selectedWord);
   })
   .catch(e => console.error(e));
